@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	    <title>购物车页面</title>
+	    <script src="http://how2j.cn/study/js/jquery/2.0.0/jquery.min.js"></script>
+	    <link href="http://how2j.cn/study/css/bootstrap/3.3.6/bootstrap.min.css" rel="stylesheet">
+	    <script src="http://how2j.cn/study/js/bootstrap/3.3.6/bootstrap.min.js"></script>
+	    <link rel="stylesheet" type="text/css" href="../css/index.css"/>
+<script>
+function formatMoney(num){
+    num = num.toString().replace(/\$|\,/g,''); 
+    if(isNaN(num)) 
+        num = "0"; 
+    sign = (num == (num = Math.abs(num))); 
+    num = Math.floor(num*100+0.50000000001); 
+    cents = num%100; 
+    num = Math.floor(num/100).toString(); 
+    if(cents<10) 
+    cents = "0" + cents; 
+    for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++) 
+    num = num.substring(0,num.length-(4*i+3))+','+ 
+    num.substring(num.length-(4*i+3)); 
+    return (((sign)?'':'-') + num + '.' + cents); 
+}
+function checkEmpty(id, name){
+    var value = $("#"+id).val();
+    if(value.length==0){
+         
+        $("#"+id)[0].focus();
+        return false;
+    }
+    return true;
+}
+ 
+$(function(){
+ 
+    $("a.productDetailTopReviewLink").click(function(){
+        $("div.productReviewDiv").show();
+        $("div.productDetailDiv").hide();
+    });
+    $("a.productReviewTopPartSelectedLink").click(function(){
+        $("div.productReviewDiv").hide();
+        $("div.productDetailDiv").show();      
+    });
+     
+    $("span.leaveMessageTextareaSpan").hide();
+    $("img.leaveMessageImg").click(function(){
+         
+        $(this).hide();
+        $("span.leaveMessageTextareaSpan").show();
+        $("div.orderItemSumDiv").css("height","100px");
+    });
+     
+    $("div#footer a[href$=#nowhere]").click(function(){
+        alert("模仿天猫的连接，并没有跳转到实际的页面");
+    });
+     
+    $("a.wangwanglink").click(function(){
+        alert("模仿旺旺的图标，并不会打开旺旺");
+    });
+    $("a.notImplementLink").click(function(){
+        alert("这个功能没做，蛤蛤~");
+    });
+     
+});
+ 
+</script>
+</head>
+ 
+<body>
+ 
+<nav class="top ">
+        <a href="#nowhere">
+            <span style="color:#C40000;margin:0px" class=" glyphicon glyphicon-home redColor"></span>
+            天猫首页
+        </a> 
+         
+        <span>喵，欢迎来天猫</span>
+         
+            <a href="#nowhere">tmalltest</a>
+            <a href="#nowhere">退出</a>      
+         
+        <span class="pull-right">
+            <a href="#nowhere">我的订单</a>
+            <a href="#nowhere">
+            <span style="color:#C40000;margin:0px" class=" glyphicon glyphicon-shopping-cart redColor"></span>
+            购物车<strong>5</strong>件</a>       
+        </span>
+         
+</nav>
+ 
+<div >
+    <a href="#nowhere">
+        <img id="simpleLogo" class="simpleLogo" src="http://how2j.cn/tmall/img/site/simpleLogo.png"> 
+    </a>
+     
+    <form  method="post" >   
+    <div class="simpleSearchDiv pull-right">
+        <input type="text" placeholder="平衡车 原汁机" name="keyword">
+        <button class="searchButton" type="button">搜天猫</button>
+        <div class="searchBelow">
+             
+                    <span>
+                        <a href="#nowhere">
+                            冰箱
+                        </a>
+                                         
+                            <span>|</span>             
+                         
+                    </span>          
+                 
+                    <span>
+                        <a href="#nowhere">
+                            空调
+                        </a>
+                                         
+                            <span>|</span>             
+                         
+                    </span>          
+                 
+                    <span>
+                        <a href="#nowhere">
+                            女表
+                        </a>
+                                         
+                            <span>|</span>             
+                         
+                    </span>          
+                 
+                    <span>
+                        <a href="#nowhere">
+                            男表
+                        </a>
+                         
+                    </span>          
+                 
+        </div>
+    </div>
+    </form>
+    <div style="clear:both"></div>
+</div>
+ 
+<script>
+var deleteOrderItem = false;
+var deleteOrderItemid = 0;
+$(function(){
+ 
+    $("a.deleteOrderItem").click(function(){
+        deleteOrderItem = false;
+        var oiid = $(this).attr("oiid")
+        deleteOrderItemid = oiid;
+        $("#deleteConfirmModal").modal('hide');   
+    });
+    $("button.deleteConfirmButton").click(function(){
+        deleteOrderItem = true;
+        $("#deleteConfirmModal").modal('hide');
+    });
+     
+    $('#deleteConfirmModal').on('hidden.bs.modal', function (e) {
+        if(deleteOrderItem){
+            var page="foredeleteOrderItem";
+            if(false)$.post(
+                    page,
+                    {"oiid":deleteOrderItemid},
+                    function(result){
+                        if("success"==result){
+                            $("tr.cartProductItemTR[oiid="+deleteOrderItemid+"]").hide();
+                        }
+                        else{
+                            location.href="login.jsp";
+                        }
+                    }
+                );
+             
+        }
+    }) 
+     
+    $("img.cartProductItemIfSelected").click(function(){
+        var selectit = $(this).attr("selectit")
+        if("selectit"==selectit){
+            $(this).attr("src","http://how2j.cn/tmall/img/site/cartNotSelected.png");
+            $(this).attr("selectit","false")
+            $(this).parents("tr.cartProductItemTR").css("background-color","#fff");
+        }
+        else{
+            $(this).attr("src","http://how2j.cn/tmall/img/site/cartSelected.png");
+            $(this).attr("selectit","selectit")
+            $(this).parents("tr.cartProductItemTR").css("background-color","#FFF8E1");
+        }
+        syncSelect();
+        syncCreateOrderButton();
+        calcCartSumPriceAndNumber();
+    });
+    $("img.selectAllItem").click(function(){
+        var selectit = $(this).attr("selectit")
+        if("selectit"==selectit){
+            $("img.selectAllItem").attr("src","http://how2j.cn/tmall/img/site/cartNotSelected.png");
+            $("img.selectAllItem").attr("selectit","false")
+            $(".cartProductItemIfSelected").each(function(){
+                $(this).attr("src","http://how2j.cn/tmall/img/site/cartNotSelected.png");
+                $(this).attr("selectit","false");
+                $(this).parents("tr.cartProductItemTR").css("background-color","#fff");
+            });        
+        }
+        else{
+            $("img.selectAllItem").attr("src","http://how2j.cn/tmall/img/site/cartSelected.png");
+            $("img.selectAllItem").attr("selectit","selectit")
+            $(".cartProductItemIfSelected").each(function(){
+                $(this).attr("src","http://how2j.cn/tmall/img/site/cartSelected.png");
+                $(this).attr("selectit","selectit");
+                $(this).parents("tr.cartProductItemTR").css("background-color","#FFF8E1");
+            });            
+        }
+        syncCreateOrderButton();
+        calcCartSumPriceAndNumber();
+         
+    });
+     
+    $(".orderItemNumberSetting").keyup(function(){
+        var pid=$(this).attr("pid");
+        var stock= $("span.orderItemStock[pid="+pid+"]").text();
+        var price= $("span.orderItemPromotePrice[pid="+pid+"]").text();
+         
+        var num= $(".orderItemNumberSetting[pid="+pid+"]").val();
+        num = parseInt(num);
+        if(isNaN(num))
+            num= 1;
+        if(num<=0)
+            num = 1;
+        if(num>stock)
+            num = stock;
+         
+        syncPrice(pid,num,price);
+    });
+ 
+    $(".numberPlus").click(function(){
+         
+        var pid=$(this).attr("pid");
+        var stock= $("span.orderItemStock[pid="+pid+"]").text();
+        var price= $("span.orderItemPromotePrice[pid="+pid+"]").text();
+        var num= $(".orderItemNumberSetting[pid="+pid+"]").val();
+ 
+        num++;
+        if(num>stock)
+            num = stock;
+        syncPrice(pid,num,price);
+    });
+    $(".numberMinus").click(function(){
+        var pid=$(this).attr("pid");
+        var stock= $("span.orderItemStock[pid="+pid+"]").text();
+        var price= $("span.orderItemPromotePrice[pid="+pid+"]").text();
+         
+        var num= $(".orderItemNumberSetting[pid="+pid+"]").val();
+        --num;
+        if(num<=0)
+            num=1;
+        syncPrice(pid,num,price);
+    });
+     
+    $("button.createOrderButton").click(function(){
+        var params = "";
+        $(".cartProductItemIfSelected").each(function(){
+            if("selectit"==$(this).attr("selectit")){
+                var oiid = $(this).attr("oiid");
+                params += "&oiid="+oiid;
+            }
+        });
+        params = params.substring(1);
+        location.href="forebuy?"+params;
+    });
+     
+})
+ 
+function syncCreateOrderButton(){
+    var selectAny = false;
+    $(".cartProductItemIfSelected").each(function(){
+        if("selectit"==$(this).attr("selectit")){
+            selectAny = true;
+        }
+    });
+     
+    if(selectAny){
+        $("button.createOrderButton").css("background-color","#C40000");
+        $("button.createOrderButton").removeAttr("disabled");
+    }
+    else{
+        $("button.createOrderButton").css("background-color","#AAAAAA");
+        $("button.createOrderButton").attr("disabled","disabled");     
+    }
+         
+}
+function syncSelect(){
+    var selectAll = true;
+    $(".cartProductItemIfSelected").each(function(){
+        if("false"==$(this).attr("selectit")){
+            selectAll = false;
+        }
+    });
+     
+    if(selectAll)
+        $("img.selectAllItem").attr("src","http://how2j.cn/tmall/img/site/cartSelected.png");
+    else
+        $("img.selectAllItem").attr("src","http://how2j.cn/tmall/img/site/cartNotSelected.png");
+     
+}
+function calcCartSumPriceAndNumber(){
+    var sum = 0;
+    var totalNumber = 0;
+    $("img.cartProductItemIfSelected[selectit='selectit']").each(function(){
+        var oiid = $(this).attr("oiid");
+        var price =$(".cartProductItemSmallSumPrice[oiid="+oiid+"]").text();
+        price = price.replace(/,/g, "");
+        price = price.replace(/￥/g, "");
+        sum += new Number(price);  
+         
+        var num =$(".orderItemNumberSetting[oiid="+oiid+"]").val();
+        totalNumber += new Number(num);
+         
+    });
+     
+    $("span.cartSumPrice").html("￥"+formatMoney(sum));
+    $("span.cartTitlePrice").html("￥"+formatMoney(sum));
+    $("span.cartSumNumber").html(totalNumber);
+}
+function syncPrice(pid,num,price){
+    $(".orderItemNumberSetting[pid="+pid+"]").val(num);
+    var cartProductItemSmallSumPrice = formatMoney(num*price);
+    $(".cartProductItemSmallSumPrice[pid="+pid+"]").html("￥"+cartProductItemSmallSumPrice);
+    calcCartSumPriceAndNumber();
+     
+    var page = "forechangeOrderItem";
+    if(false)$.post(
+            page,
+            {"pid":pid,"number":num},
+            function(result){
+                if("success"!=result){
+                    location.href="login.jsp";
+                }
+            }
+        );
+ 
+}
+</script>
+ 
+<title>购物车</title>
+<div class="cartDiv">
+    <div class="cartTitle pull-right">
+        <span>已选商品  (不含运费)</span>
+        <span class="cartTitlePrice">￥0.00</span>
+        <button class="createOrderButton" disabled="disabled">结 算</button>
+    </div>
+     
+    <div class="cartProductList">
+        <table class="cartProductTable">
+            <thead>
+                <tr>
+                    <th class="selectAndImage">
+                            <img selectit="false" class="selectAllItem" src="http://how2j.cn/tmall/img/site/cartNotSelected.png">            
+                    全选
+                     
+                    </th>
+                    <th>商品信息</th>
+                    <th>单价</th>
+                    <th>数量</th>
+                    <th width="120px">金额</th>
+                    <th class="operation">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                 
+                    <tr oiid="978" class="cartProductItemTR">
+                        <td>
+                            <img selectit="false" oiid="978" class="cartProductItemIfSelected" src="http://how2j.cn/tmall/img/site/cartNotSelected.png">
+                            <a style="display:none" href="#nowhere"><img src="http://how2j.cn/tmall/img/site/cartSelected.png"></a>
+                            <img class="cartProductImg"  src="http://how2j.cn/tmall/img/productSingle_middle/3752.jpg">
+                        </td>
+                        <td>
+                            <div class="cartProductLinkOutDiv">
+                                <a href="#nowhere" class="cartProductLink">洁霸BF522多功能洗地机刷地机酒店家用地毯清洗机 擦地机抛光机</a>
+                                <div class="cartProductLinkInnerDiv">
+                                    <img src="http://how2j.cn/tmall/img/site/creditcard.png" title="支持信用卡支付">
+                                    <img src="http://how2j.cn/tmall/img/site/7day.png" title="消费者保障服务,承诺7天退货">
+                                    <img src="http://how2j.cn/tmall/img/site/promise.png" title="消费者保障服务,承诺如实描述">
+                                </div>
+                            </div>
+                             
+                        </td>
+                        <td>
+                            <span class="cartProductItemOringalPrice">￥1900.0</span>
+                            <span  class="cartProductItemPromotionPrice">￥1235.0</span>
+                             
+                        </td>
+                        <td>
+                         
+                            <div class="cartProductChangeNumberDiv">
+                                <span class="hidden orderItemStock " pid="373">39</span>
+                                <span class="hidden orderItemPromotePrice " pid="373">1235.0</span>
+                                <a  pid="373" class="numberMinus" href="#nowhere">-</a>
+                                <input pid="373" oiid="978" class="orderItemNumberSetting" autocomplete="off" value="4">
+                                <a  stock="39" pid="373" class="numberPlus" href="#nowhere">+</a>
+                            </div>                   
+                         
+                         </td>
+                        <td >
+                            <span class="cartProductItemSmallSumPrice" oiid="978" pid="373" >
+                            ￥4,940.00
+                            </span>
+                         
+                        </td>
+                        <td>
+                            <a class="deleteOrderItem" oiid="978"  href="#nowhere">删除</a>
+                        </td>
+                    </tr>
+                 
+                    <tr oiid="977" class="cartProductItemTR">
+                        <td>
+                            <img selectit="false" oiid="977" class="cartProductItemIfSelected" src="http://how2j.cn/tmall/img/site/cartNotSelected.png">
+                            <a style="display:none" href="#nowhere"><img src="http://how2j.cn/tmall/img/site/cartSelected.png"></a>
+                            <img class="cartProductImg"  src="http://how2j.cn/tmall/img/productSingle_middle/3182.jpg">
+                        </td>
+                        <td>
+                            <div class="cartProductLinkOutDiv">
+                                <a href="#nowhere" class="cartProductLink">两轮平衡车双轮儿童思维漂移电动扭扭车智能滑板车成人体感代步车</a>
+                                <div class="cartProductLinkInnerDiv">
+                                    <img src="http://how2j.cn/tmall/img/site/creditcard.png" title="支持信用卡支付">
+                                    <img src="http://how2j.cn/tmall/img/site/7day.png" title="消费者保障服务,承诺7天退货">
+                                    <img src="http://how2j.cn/tmall/img/site/promise.png" title="消费者保障服务,承诺如实描述">
+                                </div>
+                            </div>
+                             
+                        </td>
+                        <td>
+                            <span class="cartProductItemOringalPrice">￥889.0</span>
+                            <span  class="cartProductItemPromotionPrice">￥755.65</span>
+                             
+                        </td>
+                        <td>
+                         
+                            <div class="cartProductChangeNumberDiv">
+                                <span class="hidden orderItemStock " pid="321">64</span>
+                                <span class="hidden orderItemPromotePrice " pid="321">755.65</span>
+                                <a  pid="321" class="numberMinus" href="#nowhere">-</a>
+                                <input pid="321" oiid="977" class="orderItemNumberSetting" autocomplete="off" value="1">
+                                <a  stock="64" pid="321" class="numberPlus" href="#nowhere">+</a>
+                            </div>                   
+                         
+                         </td>
+                        <td >
+                            <span class="cartProductItemSmallSumPrice" oiid="977" pid="321" >
+                            ￥755.65
+                            </span>
+                         
+                        </td>
+                        <td>
+                            <a class="deleteOrderItem" oiid="977"  href="#nowhere">删除</a>
+                        </td>
+                    </tr>
+                                 
+            </tbody>
+         
+        </table>
+    </div>
+     
+    <div class="cartFoot">
+        <img selectit="false" class="selectAllItem" src="http://how2j.cn/tmall/img/site/cartNotSelected.png">
+        <span>全选</span>
+<!--         <a href="#">删除</a> -->
+         
+        <div class="pull-right">
+            <span>已选商品 <span class="cartSumNumber" >0</span> 件</span>
+             
+            <span>合计 (不含运费): </span>
+            <span class="cartSumPrice" >￥0.00</span>
+            <button class="createOrderButton" disabled="disabled" >结  算</button>
+        </div>
+         
+    </div>
+     
+</div>
+ 
+<div class="modal " id="loginModal" tabindex="-1" role="dialog" >
+    <div class="modal-dialog loginDivInProductPageModalDiv">
+            <div class="modal-content">
+                    <div class="loginDivInProductPage">
+                        <div class="loginErrorMessageDiv">
+                            <div class="alert alert-danger" >
+                              <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
+                                <span class="errorMessage"></span>
+                            </div>
+                        </div>
+                             
+                        <div class="login_acount_text">账户登录</div>
+                        <div class="loginInput " >
+                            <span class="loginInputIcon ">
+                                <span class=" glyphicon glyphicon-user"></span>
+                            </span>
+                            <input id="name" name="name" placeholder="手机/会员名/邮箱" type="text">        
+                        </div>
+                         
+                        <div class="loginInput " >
+                            <span class="loginInputIcon ">
+                                <span class=" glyphicon glyphicon-lock"></span>
+                            </span>
+                            <input id="password" name="password"  type="password" placeholder="密码" type="text">          
+                        </div>
+                                    <span class="text-danger">不要输入真实的天猫账号密码</span><br><br>
+                        <div>
+                            <a href="#nowhere">忘记登录密码</a>
+                            <a href="#nowhere" class="pull-right">免费注册</a>
+                        </div>
+                        <div style="margin-top:20px">
+                            <button class="btn btn-block redButton loginSubmitButton" type="button">登录</button>
+                        </div>
+                    </div>   
+          </div>
+    </div>
+</div>
+ 
+<div class="modal" id="deleteConfirmModal" tabindex="-1" role="dialog" >
+    <div class="modal-dialog deleteConfirmModalDiv">
+       <div class="modal-content">
+          <div class="modal-header">
+            <button data-dismiss="modal" class="close" type="button"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title">确认删除？</h4>
+          </div>
+          <div class="modal-footer">
+            <button data-dismiss="modal" class="btn btn-default" type="button">关闭</button>
+            <button class="btn btn-primary deleteConfirmButton" id="submit" type="button">确认</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+ 
+<div id="footer"  class="footer" style="display: block;">
+     
+    <div id="footer_ensure" class="footer_ensure">
+            <a href="#nowhere">
+                <img src="http://how2j.cn/tmall/img/site/ensure.png">
+            </a>
+    </div>
+     
+    <div id="footer_desc" class="footer_desc">
+            <div class="descColumn">
+                <span class="descColumnTitle">购物指南</span>
+                <a href="#nowhere" >免费注册</a>
+                <a href="#nowhere" >开通支付宝</a>
+                <a href="#nowhere" >支付宝充值</a>
+            </div>
+            <div class="descColumn">
+                <span class="descColumnTitle">天猫保障</span>
+                <a href="#nowhere" >发票保障</a>
+                <a href="#nowhere" >售后规则</a>
+                <a href="#nowhere" >缺货赔付</a>
+            </div>
+            <div class="descColumn">
+                <span class="descColumnTitle">支付方式</span>
+                <a href="#nowhere" >快捷支付</a>
+                <a href="#nowhere" >信用卡</a>
+                <a href="#nowhere" >蚂蚁花呗</a>
+                <a href="#nowhere" >货到付款</a>
+            </div>
+            <div class="descColumn">
+                <span class="descColumnTitle">商家服务</span>
+                <a href="#nowhere" >商家入驻</a>
+                <a href="#nowhere" >商家中心</a>
+                <a href="#nowhere" >天猫智库</a>
+                <a href="#nowhere" >天猫规则</a>
+                <a href="#nowhere" >物流服务</a>
+                <a href="#nowhere" >喵言喵语</a>
+                <a href="#nowhere" >运营服务</a>
+            </div>
+            <div class="descColumn">
+                <span class="descColumnTitle">手机天猫</span>
+                <a href="#nowhere" ><img src="http://how2j.cn/tmall/img/site/ma.png"></a>
+            </div>
+             
+    </div>
+     
+    <div style="clear:both"></div>
+     
+    <img id="cateye" class="cateye" src="http://how2j.cn/tmall/img/site/cateye.png">
+     
+    <div id="copyright" class="copyright">
+        <div class="white_link" >
+            <a href="#nowhere" >关于天猫</a>
+            <a href="#nowhere" > 帮助中心</a>
+            <a href="#nowhere" >开放平台</a>
+            <a href="#nowhere" >  诚聘英才</a>
+            <a href="#nowhere" >联系我们</a>
+            <a href="#nowhere" >网站合作</a>
+            <a href="#nowhere" >法律声明</a>
+            <a href="#nowhere" >知识产权</a>
+            <a href="#nowhere" >  廉正举报    </a>
+        </div>
+        <div class="white_link" >
+            <a href="#nowhere" > 阿里巴巴集团</a><span class="slash">|</span>
+            <a href="#nowhere" > 淘宝网</a><span class="slash">|</span>
+            <a href="#nowhere" >天猫 </a><span class="slash">|</span>
+            <a href="#nowhere" >  聚划算</a><span class="slash">|</span>
+            <a href="#nowhere" >全球速卖通</a><span class="slash">|</span>
+            <a href="#nowhere" >阿里巴巴国际交易市场</a><span class="slash">|</span>
+            <a href="#nowhere" >1688</a><span class="slash">|</span>
+            <a href="#nowhere" >阿里妈妈</a><span class="slash">|</span>
+            <a href="#nowhere" >  阿里旅行·去啊 </a><span class="slash">|</span>
+            <a href="#nowhere" >  阿里云计算   </a><span class="slash">|</span>
+            <a href="#nowhere" >  阿里通信    </a><span class="slash">|</span>
+            <a href="#nowhere" >  YunOS   </a><span class="slash">|</span>
+            <a href="#nowhere" >  阿里旅行·去啊 </a><span class="slash">|</span>
+            <a href="#nowhere" >   万网 </a><span class="slash">|</span>
+            <a href="#nowhere" >  高德  </a><span class="slash">|</span>
+            <a href="#nowhere" > 优视   </a><span class="slash">|</span>
+            <a href="#nowhere" >  友盟  </a><span class="slash">|</span>
+            <a href="#nowhere" >  虾米  </a><span class="slash">|</span>
+            <a href="#nowhere" >  天天动听    </a><span class="slash">|</span>
+            <a href="#nowhere" >  来往  </a><span class="slash">|</span>
+            <a href="#nowhere" >  钉钉  </a><span class="slash">|</span>
+            <a href="#nowhere" >  支付宝         </a>
+        </div>
+     
+        <div class="license">
+            <span>增值电信业务经营许可证： 浙B2-20110446</span>
+            <span>网络文化经营许可证：浙网文[2015]0295-065号</span>
+            <span>互联网医疗保健信息服务 审核同意书 浙卫网审【2014】6号 </span>
+            <span>互联网药品信息服务资质证书编号：浙-（经营性）-2012-0005</span>
+            <div class="copyRightYear">© 2003-2016 TMALL.COM 版权所有</div>
+            <div>
+                <img src="http://how2j.cn/tmall/img/site/copyRight1.jpg">
+                <img src="http://how2j.cn/tmall/img/site/copyRight2.jpg">
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
